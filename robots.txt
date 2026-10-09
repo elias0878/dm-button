@@ -1,0 +1,6 @@
+# robots.txt — فريق ابونواف · ant.xo.je
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://dm-button.vercel.app/sitemap.xml

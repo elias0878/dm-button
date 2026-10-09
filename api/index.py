@@ -46,9 +46,10 @@ def _find_root():
 ROOT = _find_root()
 
 # ملفات يُسمح بخدمتها كملفات ثابتة (قائمة بيضاء)
-SAFE_EXT = {".html", ".css", ".js", ".svg", ".ico", ".png", ".jpg", ".webp", ".woff2"}
+SAFE_EXT = {".html", ".css", ".js", ".svg", ".ico", ".png", ".jpg", ".jpeg",
+            ".webp", ".gif", ".woff2", ".xml", ".txt", ".json"}
 BLOCKED = {"pyproject.toml", "requirements.txt", "vercel.json", "package.json",
-           ".env", ".gitignore", "uv.lock"}
+           ".env", ".gitignore", "uv.lock", "test_logic.js", "dev_server.py"}
 
 MIME = {
     ".html": "text/html; charset=utf-8",
@@ -64,6 +65,7 @@ MIME = {
     ".webp": "image/webp",
     ".gif": "image/gif",
     ".woff2": "font/woff2",
+    ".xml": "application/xml; charset=utf-8",
 }
 
 

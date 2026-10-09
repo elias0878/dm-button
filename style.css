@@ -245,3 +245,19 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:40px
   .credit .name{font-size:26px}
   .hero h1{font-size:23px}
 }
+
+/* قسم الشرح (محتوى للزواحف) */
+.seoh2{font-size:17.5px;color:var(--ink);font-weight:750;margin-bottom:14px}
+.faq details{border-top:1px solid var(--border);padding:13px 0}
+.faq summary{
+  cursor:pointer;font-size:14.5px;font-weight:700;color:var(--ink);list-style:none;
+  display:flex;align-items:center;gap:8px;
+}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::before{content:"+";color:var(--accent);font-size:18px;font-weight:800;line-height:1}
+.faq details[open] summary::before{content:"−"}
+.faq p{color:var(--muted);font-size:13.5px;margin-top:9px;padding-right:24px;line-height:1.9}
+.faq p b{color:var(--ink)}
+.en{font-family:monospace;direction:ltr;display:inline-block;
+    background:#fafcfe;border:1px solid var(--border);border-radius:5px;
+    padding:1px 6px;color:var(--brand);font-size:12.5px}
