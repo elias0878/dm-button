@@ -138,10 +138,10 @@ async function go() {
   }
 }
 
-/* ---------- إدخال يدوي للرقم التعريفي (يعمل بدون خادم) ---------- */
+/* ---------- إدخال يدوي للرقم التعريفي (يعمل حتى لو حجب X الخادم) ---------- */
 function manual() {
-  if (P) return;
-  const id = prompt('أدخل الرقم التعريفي (User ID) لحسابك:');
+  const id = prompt('أدخل الرقم التعريفي (User ID) لحسابك:\n\n'
+    + 'تعرفه من: الإعدادات ← حسابك ← تنزيل أرشيف ← account.js ← accountId');
   if (!id || !ID_RE.test(id.trim())) return;
   P = { id: id.trim(), screen_name: 'حسابك', name: 'إدخال يدوي', avatar: null, protected: false };
   $('box').style.display = 'block';
@@ -190,7 +190,7 @@ function init() {
     }
   };
 
-  $('who').addEventListener('dblclick', manual);   // سرّي: نقرة مزدوجة للإدخال اليدوي
+  $('manual').onclick = manual;
   $('yr').textContent = new Date().getFullYear();
   markChip();
 }

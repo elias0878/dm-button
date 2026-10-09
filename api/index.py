@@ -62,6 +62,20 @@ MIME = {
 
 
 # ---------------- أدوات تحليل HTML ----------------
+def _first_match(html, patterns):
+    """يجرب الأنماط بالترتيب ويرجع أول تطابق — حماية من تغيّر بنية X"""
+    for p in patterns:
+        m = re.search(p, html)
+        if m:
+            return m
+    return None
+
+
+def _first_group(html, patterns):
+    m = _first_match(html, patterns)
+    return m.group(1) if m else None
+
+
 def js_bool(v):
     """X يخزّن القيم المنطقية مضغوطة: !1 = false و !0 = true"""
     if v is None:
@@ -76,9 +90,18 @@ def fetch_profile(username):
     url = "https://x.com/" + urllib.parse.quote(username)
     req = urllib.request.Request(url, headers={
         "User-Agent": UA,
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,"
+                  "image/avif,image/webp,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.9,ar;q=0.8",
         "Accept-Encoding": "identity",
+        "sec-ch-ua": '"Chromium";v="126", "Google Chrome";v="126", "Not-A.Brand";v="24"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"Windows"',
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "none",
+        "Sec-Fetch-User": "?1",
+        "Upgrade-Insecure-Requests": "1",
         "Connection": "close",
     })
     with urllib.request.urlopen(req, timeout=FETCH_TIMEOUT) as resp:
@@ -88,11 +111,25 @@ def fetch_profile(username):
 def parse_profile(html):
     d = {}
 
-    # الهوية الرقمية + اسم المستخدم (الزوج الموثوق الوحيد)
-    m = re.search(r'restId:"(\d+)",screenName:"([A-Za-z0-9_]+)"', html)
-    if not m:
+    # الهوية الرقمية + اسم المستخدم
+    # ملاحظة: X يغيّر ترتيب الحقول أحياناً (أضاف schema:null بينهما)،
+    # لذا نستخدم سلسلة بدائل بدل الاعتماد على نمط واحد.
+    d["id"] = _first_group(html, [
+        r'restId:"(\d+)"',
+        r'rest_id:"(\d+)"',
+        r'"id_str":"(\d+)"',
+        r'profile_banners/(\d+)/\d+',
+    ])
+    m = _first_match(html, [
+        r'screenName:"([A-Za-z0-9_]+)",tweets:(\d+)',
+        r'screenName:"([A-Za-z0-9_]+)"',
+        r'screen_name:"([A-Za-z0-9_]+)"',
+        r'<meta property="og:title" content="[^"]*\(@([A-Za-z0-9_]+)\)',
+    ])
+    if not d["id"] or not m:
         return None
-    d["id"], d["screen_name"] = m.group(1), m.group(2)
+    d["screen_name"] = m.group(1)
+    d["tweets"] = int(m.group(2)) if (m.re.groups >= 2 and m.group(2)) else None
 
     # الاسم المعروض + تاريخ الإنشاء
     m = re.search(
@@ -119,9 +156,6 @@ def parse_profile(html):
     # الإحصائيات
     m = re.search(r'relationship_counts:\$R\[\d+\]={followers:(\d+),following:(\d+)}', html)
     d["followers"], d["following"] = (int(m.group(1)), int(m.group(2))) if m else (None, None)
-
-    m = re.search(r'restId:"%s",screenName:"[A-Za-z0-9_]+",tweets:(\d+)' % re.escape(d["id"]), html)
-    d["tweets"] = int(m.group(1)) if m else None
 
     # الحالة
     d["protected"] = js_bool(
