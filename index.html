@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>زر الرسائل الخاصة — أداة أبو نواف</title>
+<meta name="description" content="أنشئ زر رسائل خاصة مخصص لتغريدتك: اختر الإيموجي ونص الزر والرسالة الجاهزة، مع معاينة حية.">
+<meta name="author" content="أبو نواف">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%231d9bf0'/%3E%3Ctext x='50' y='71' font-size='56' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'%3E%D8%A3%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<main>
+  <h1>💬 زر الرسائل الخاصة</h1>
+  <p class="lead">اكتب اسم حسابك، ثم خصّص الزر: الإيموجي ونص النداء والرسالة الجاهزة.</p>
+
+  <!-- ١ · التحقق -->
+  <div class="card">
+    <div class="step">١</div>
+    <label for="handle">اسم المستخدم في X</label>
+    <div class="row">
+      <div class="at"><input type="text" id="handle" placeholder="2002_ant" autocomplete="off" spellcheck="false"></div>
+      <button id="go">تحقّق</button>
+    </div>
+    <div class="msg" id="msg"></div>
+    <div id="who"></div>
+  </div>
+
+  <!-- ٢ · التخصيص -->
+  <div class="card" id="box" style="display:none">
+    <div class="step">٢</div>
+
+    <label for="intro">نص قبل الزر <span class="opt">(اختياري)</span></label>
+    <input type="text" id="intro" placeholder="عندك استفسار؟ تفضل">
+
+    <label>إيموجي الزر</label>
+    <div class="chips" id="chips"></div>
+    <input type="text" id="emoji" class="sm" placeholder="أو اكتب إيموجي مخصص" maxlength="4">
+
+    <label for="label" style="margin-top:16px">نص الزر <span class="opt">(النداء الذي يراه الناس)</span></label>
+    <input type="text" id="label" placeholder="راسلني على الخاص">
+
+    <label for="prefill" style="margin-top:16px">رسالة جاهزة <span class="opt">(تُكتب تلقائياً في صندوق المراسلة)</span></label>
+    <input type="text" id="prefill" placeholder="السلام عليكم، حاب أستفسر عن...">
+  </div>
+
+  <!-- ٣ · النتيجة -->
+  <div class="card" id="box2" style="display:none">
+    <div class="step">٣</div>
+    <label>تغريدتك الجاهزة</label>
+    <div class="out" id="out"></div>
+    <div class="meta"><span id="cnt">0</span> / 280 حرف</div>
+    <div class="row btns">
+      <button class="ok" id="copy">📋 نسخ التغريدة</button>
+      <a class="ghost" id="post" target="_blank" rel="noopener">🐦 انشر في X</a>
+    </div>
+    <div class="hint">
+      ✔ الرابط موضوع في <b>آخر سطر</b> — هذا الشرط لكي يرسم X الزر في أسفل التغريدة.
+    </div>
+  </div>
+
+  <div class="note" id="tip" style="display:none">
+    ⚠️ فعّل: <b>الإعدادات ← الخصوصية والأمان ← الرسائل المباشرة ← «السماح بطلبات الرسائل من الجميع»</b>
+  </div>
+</main>
+
+<footer>
+  <div class="b">حقوق ابونواف</div>
+  <a href="https://ant.xo.je" target="_blank" rel="noopener">ant.xo.je</a>
+</footer>
+
+<div class="toast" id="toast">تم النسخ ✔</div>
+
+<script src="/app.js"></script>
+</body>
+</html>
