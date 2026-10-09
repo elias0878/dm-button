@@ -3,149 +3,92 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>زر الرسائل الخاصة — مقدمة من ابونواف هكر اخلاقي</title>
-<meta name="description" content="أنشئ زر رسائل خاصة مخصص لتغريدتك: الإيموجي ونص النداء والرسالة الجاهزة. مقدمة من ابونواف هكر اخلاقي — ant.xo.je">
-<meta name="author" content="ابونواف">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 4 L56 13 V33 C56 46 46 55 32 60 C18 55 8 46 8 33 V13 Z' fill='%231d9bf0'/%3E%3Cpath d='M22 26 L28 32 L22 38' stroke='%23fff' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M33 39 H43' stroke='%23fff' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+<title>زر الرسائل الخاصة لتغريدات X — فريق ابونواف</title>
+<meta name="description" content="أداة مجانية من فريق ابونواف: أدخل اسم المستخدم في X، نتحقق منه ونستخرج الرقم التعريفي، ثم نجهّز لك تغريدة جاهزة تحتوي على زر المراسلة المباشرة.">
+<meta name="author" content="فريق ابونواف">
+<link rel="icon" href="/assets/logo.jpg">
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 
-<main>
-  <h1>💬 زر الرسائل الخاصة</h1>
-  <p class="lead">اكتب اسم حسابك، ثم خصّص الزر: الإيموجي ونص النداء والرسالة الجاهزة.</p>
+<!-- ================= الهيدر ================= -->
+<header>
+  <div class="bar">
+    <div class="brand">
+      <img src="/assets/logo.jpg" alt="شعار فريق ابونواف">
+      <div>
+        <div class="bn">فريق ابونواف</div>
+        <div class="bs">هكر أخلاقي</div>
+      </div>
+    </div>
+    <a class="dom" href="https://ant.xo.je" target="_blank" rel="noopener">ant.xo.je</a>
+  </div>
+</header>
 
-  <!-- ١ · التحقق -->
-  <div class="card">
-    <div class="step">١</div>
+<main>
+  <!-- ================= المقدمة ================= -->
+  <section class="hero">
+    <span class="eyebrow">أداة مجانية · بدون تسجيل</span>
+    <h1>زر الرسائل الخاصة لتغريدات X</h1>
+    <p>أدخل اسم المستخدم، نتحقق من الحساب ونستخرج الرقم التعريفي،
+       ثم نجهّز لك تغريدة جاهزة تحتوي على زر المراسلة المباشرة.</p>
+  </section>
+
+  <!-- ================= ١ · التحقق ================= -->
+  <section class="card">
+    <div class="sh"><span class="num">١</span><h2>التحقق من الحساب</h2></div>
     <label for="handle">اسم المستخدم في X</label>
     <div class="row">
-      <div class="at"><input type="text" id="handle" placeholder="2002_ant" autocomplete="off" spellcheck="false"></div>
+      <div class="at">
+        <input type="text" id="handle" placeholder="2002_ant" autocomplete="off" spellcheck="false">
+      </div>
       <button id="go">تحقّق</button>
     </div>
-    <button class="manual" id="manual">🔢 أدخل الرقم التعريفي يدوياً</button>
     <div class="msg" id="msg"></div>
     <div id="who"></div>
-  </div>
+  </section>
 
-  <!-- ٢ · التخصيص -->
-  <div class="card" id="box" style="display:none">
-    <div class="step">٢</div>
+  <!-- ================= ٢ · النتيجة ================= -->
+  <section class="card hidden" id="box">
+    <div class="sh"><span class="num">٢</span><h2>تغريدتك الجاهزة</h2></div>
 
-    <label for="intro">نص قبل الزر <span class="opt">(اختياري)</span></label>
-    <input type="text" id="intro" placeholder="عندك استفسار؟ تفضل">
-
-    <label>إيموجي الزر</label>
-    <div class="chips" id="chips"></div>
-    <input type="text" id="emoji" class="sm" placeholder="أو اكتب إيموجي مخصص" maxlength="4">
-
-    <label for="label" style="margin-top:16px">نص الزر <span class="opt">(النداء الذي يراه الناس)</span></label>
-    <input type="text" id="label" placeholder="راسلني على الخاص">
-
-    <label for="prefill" style="margin-top:16px">رسالة جاهزة <span class="opt">(تُكتب تلقائياً في صندوق المراسلة)</span></label>
-    <input type="text" id="prefill" placeholder="السلام عليكم، حاب أستفسر عن...">
-  </div>
-
-  <!-- ٣ · النتيجة -->
-  <div class="card" id="box2" style="display:none">
-    <div class="step">٣</div>
-    <label>تغريدتك الجاهزة</label>
     <div class="out" id="out"></div>
-    <div class="meta"><span id="cnt">0</span> / 280 حرف</div>
+    <div class="meta"><span id="cnt">0</span> / 280</div>
+
     <div class="row btns">
       <button class="ok" id="copy">📋 نسخ التغريدة</button>
-      <a class="ghost" id="post" target="_blank" rel="noopener">🐦 انشر في X</a>
+      <a class="ghost" id="post" target="_blank" rel="noopener">🐦 نشر في X</a>
     </div>
-    <div class="hint">
-      ✔ الرابط موضوع في <b>آخر سطر</b> — هذا شرط X لكي يرسم الزر في أسفل التغريدة.
+
+    <div class="req">
+      <b>متطلب أساسي:</b> يجب تفعيل «السماح بطلبات الرسائل من الجميع» من
+      الإعدادات ← الخصوصية والأمان ← الرسائل المباشرة، وإلا لن يتمكن غير المتابعين من الإرسال.
     </div>
-  </div>
-
-  <!-- ملاحظات مهمة -->
-  <div class="card facts" id="facts" style="display:none">
-    <div class="step">!</div>
-    <h2>اقرأ هذا قبل النشر</h2>
-
-    <details open>
-      <summary>أين يظهر الإيموجي ونص الزر بالضبط؟</summary>
-      <p>ما تخصّصه أعلاه يظهر في <b>نص التغريدة نفسه</b> — وهو ما يقرأه الناس قبل أن يضغطوا. أما <b>الزر الذي يرسمه X</b> تلقائياً في أسفل التغريدة فنصه <b>ثابت من X</b> («Send a private message») ولا يمكن تغييره في التغريدات العادية المجانية.</p>
-    </details>
-
-    <details>
-      <summary>هل يمكنني جعل نص الزر بإيموجيّ الخاص فعلاً؟</summary>
-      <p>نعم — لكن عبر <b>مسار الشركات المدفوع فقط</b>، حسب توثيق X للأعمال:</p>
-      <ol>
-        <li>ادخل <b>حساب X الإعلاني</b> ← Creatives ← Cards</li>
-        <li>أنشئ <b>Direct Message Card</b> (صورة أو فيديو)</li>
-        <li>اختر عدد الأزرار — حتى <b>٤ أزرار</b></li>
-        <li><b>«أدخل نص كل زر — الإيموجي مدعوم»</b></li>
-        <li>أدخل <b>Welcome Message ID</b> لكل زر — إلزامي</li>
-      </ol>
-      <p class="warn">⚠️ معرّف رسالة الترحيب يتطلب <b>شريك chatbot معتمد على X</b>. بدون حساب إعلاني وشريك بوت، لا يمكن الحصول عليه.</p>
-    </details>
-
-    <details>
-      <summary>الرسالة الجاهزة لا تظهر عندي — لماذا؟</summary>
-      <p>المعامل <code>&amp;text=</code> <b>رسمي وموثّق</b> من X، ويفتح صندوق المراسلة بالنص مكتوباً. إن لم يظهر، راجع بالترتيب:</p>
-      <ol>
-        <li>الرسائل الخاصة مفتوحة للجميع عندك <b>وعند المُرسِل</b></li>
-        <li>جرّب من <b>حساب آخر</b> — لا تفتح رابطك وأنت مسجّل بحسابك أنت</li>
-        <li>افتح الرابط من <b>متصفح خارجي</b>، لا من داخل تطبيق X</li>
-        <li>بعض نسخ تطبيق الجوال تتجاهل المعامل — الويب أكثر ثباتاً</li>
-        <li>تأكد أن الرابط كامل بلا <b>مسافات</b> داخله</li>
-      </ol>
-      <p>تستطيع دائماً إيقاف هذه الميزة بترك الحقل فارغاً — يعمل الزر بدونه.</p>
-    </details>
-
-    <details>
-      <summary>شرط أساسي لا يُستغنى عنه</summary>
-      <p><b>الإعدادات ← الخصوصية والأمان ← الرسائل المباشرة ← «السماح بطلبات الرسائل من الجميع»</b>. بدونه يوصل الزائر لطريق مسدود.</p>
-    </details>
-  </div>
-
-  <div class="note" id="tip" style="display:none">
-    ⚠️ فعّل: <b>«السماح بطلبات الرسائل من الجميع»</b> قبل النشر.
-  </div>
+  </section>
 </main>
 
-<!-- ============ الفوتر ============ -->
-<footer class="ft">
-  <div class="ft-inner">
+<!-- ================= الفوتر ================= -->
+<footer>
+  <div class="ft">
 
-    <!-- الشعار والفريق -->
     <div class="ft-brand">
-      <svg class="ft-logo" viewBox="0 0 64 64" aria-label="شعار فريق أبو نواف">
-        <defs>
-          <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#1d9bf0"/>
-            <stop offset="1" stop-color="#00ba7c"/>
-          </linearGradient>
-        </defs>
-        <path d="M32 4 L56 13 V33 C56 46 46 55 32 60 C18 55 8 46 8 33 V13 Z" fill="url(#lg)"/>
-        <path d="M22 26 L28 32 L22 38" stroke="#04231a" stroke-width="4.5" fill="none"
-              stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M33 39 H43" stroke="#04231a" stroke-width="4.5" stroke-linecap="round"/>
-      </svg>
-      <div class="ft-team">
-        <div class="ft-team-name">فريق أبو نواف</div>
-        <div class="ft-team-sub">Ethical Hacking Team</div>
+      <img src="/assets/logo.jpg" alt="شعار فريق ابونواف">
+      <div>
+        <div class="ft-team-n">فريق ابونواف</div>
+        <div class="ft-team-s">هكر أخلاقي · المملكة العربية السعودية</div>
       </div>
     </div>
 
-    <!-- الإعلان البارز -->
-    <div class="ft-credit">
-      <span class="ft-badge">مقدمة من</span>
-      <div class="ft-name">ابونواف</div>
-      <div class="ft-role">هكر اخلاقي</div>
+    <div class="credit">
+      <span class="badge">مقدمة من</span>
+      <div class="name">ابونواف</div>
+      <div class="role">هكر اخلاقي</div>
+      <div class="loc">الرياض — المملكة العربية السعودية</div>
     </div>
 
-    <!-- أزرار التواصل -->
-    <div class="ft-social">
-      <div class="ft-soc-title">تواصل معنا</div>
-      <div class="ft-grid" id="social"></div>
-    </div>
+    <div class="ft-soc-t">حساباتنا الرسمية</div>
+    <div class="soc-grid" id="social"></div>
 
-    <!-- النطاق والحقوق -->
     <a class="ft-dom" href="https://ant.xo.je" target="_blank" rel="noopener">ant.xo.je</a>
     <div class="ft-copy">© <span id="yr">2026</span> جميع الحقوق محفوظة — <b>حقوق ابونواف</b></div>
 

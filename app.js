@@ -1,54 +1,43 @@
-/* زر الرسائل الخاصة — أداة أبو نواف · ant.xo.je */
+/* =========================================================
+   زر الرسائل الخاصة — فريق ابونواف
+   ant.xo.je  ·  حقوق ابونواف © 2026
+   ========================================================= */
 
 const $ = id => document.getElementById(id);
-const LS = 'ant_dm_v2';
+const LS = 'ant_dm_v3';
 const ID_RE = /^\d{5,25}$/;
 
-/* إيموجيات سريعة الاختيار */
-const CHIPS = ['💬', '✉️', '📩', '🙋', '💌', '📞', '🔔', '👋'];
+/* ---- حساباتنا الرسمية ---- */
+const ICONS = {
+  tg : '<path d="M21.5 3.5 2.8 10.9c-.8.3-.8 1.1.1 1.3l4.3 1.2 1.6 5.2c.2.6 1 .7 1.4.2l2.3-2.7 4.5 3.3c.5.4 1.2.1 1.3-.5l3.3-14c.1-.6-.5-1.1-1.1-.9Z"/><path d="m9.4 13.6 8.5-5.6"/>',
+  sn : '<path d="M12 3c4 0 7 2.7 7 6.3 0 1.6-.4 2.7-.4 3.9 0 .6.3 1 .8 1.3.7.4 1.6.2 1.6 1.3 0 1.5-2.7 2.5-4.7 2.5-.7 0-1.3.2-1.6.6-.3.4-.5 1-.5 1.8 0 .6-.5 1.1-1.2 1.1s-1.2-.5-1.2-1.1c0-.8-.2-1.4-.5-1.8-.3-.4-.9-.6-1.6-.6-2 0-4.7-1-4.7-2.5 0-1.1.9-.9 1.6-1.3.5-.3.8-.7.8-1.3 0-1.2-.4-2.3-.4-3.9C5 5.7 8 3 12 3Z"/><circle cx="9.7" cy="10.2" r=".9" fill="currentColor" stroke="none"/><circle cx="14.3" cy="10.2" r=".9" fill="currentColor" stroke="none"/>',
+  ig : '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/>',
+  tt : '<path d="M14.5 3v10.8a3.6 3.6 0 1 1-3.6-3.6c.3 0 .6 0 .9.1"/><path d="M14.5 3c.4 2.3 2 3.9 4.3 4.1"/>',
+  x  : '<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117Z" fill="currentColor" stroke="none"/>',
+  fb : '<rect x="3" y="3" width="18" height="18" rx="5"/><path d="M14.5 8h2V5.6c-.5-.3-1.2-.5-2.1-.5-2.1 0-3.5 1.3-3.5 3.8V11H8.7v2.8h2.2V21h3v-7.2h2.2l.4-2.8h-2.6V9.1c0-.7.2-1.1.6-1.1Z"/>',
+  web: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.5 2.7 3.8 5.7 3.8 9S14.5 18.3 12 21c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3Z"/>',
+};
 
-/* روابط التواصل — أضف روابطك هنا (اترك النص فارغاً لتعطيل الزر) */
 const SOCIAL = [
-  { n:'X / تويتر',  e:'🐦', u:'https://x.com/2002_ant' },
-  { n:'الموقع',     e:'🌐', u:'https://ant.xo.je'      },
-  { n:'تليجرام',    e:'✈️', u:'' },
-  { n:'واتساب',     e:'📱', u:'' },
-  { n:'البريد',     e:'📧', u:'' },
-  { n:'يوتيوب',     e:'▶️', u:'' },
-  { n:'جيت هب',     e:'💻', u:'' },
-  { n:'انستغرام',   e:'📸', u:'' },
-  { n:'تيك توك',    e:'🎵', u:'' },
+  { n:'تليجرام',  i:'tg',  u:'https://t.me/KSA_hack01' },
+  { n:'سناب شات', i:'sn',  u:'https://www.snapchat.com/add/ant_ceh' },
+  { n:'إنستجرام', i:'ig',  u:'https://www.instagram.com/ksa_hack01' },
+  { n:'تيك توك',  i:'tt',  u:'https://www.tiktok.com/@ksa_hack01' },
+  { n:'تويتر X',  i:'x',   u:'https://twitter.com/ksa_hack2' },
+  { n:'فيسبوك',   i:'fb',  u:'https://www.facebook.com/profile.php?id=61554330014413' },
+  { n:'الموقع',   i:'web', u:'https://ant.xo.je' },
 ];
 
-/* الحالة المحفوظة في المتصفح */
-const S = { handle:'', intro:'', emoji:'💬', label:'راسلني على الخاص', prefill:'' };
-try { Object.assign(S, JSON.parse(localStorage.getItem(LS) || '{}')); } catch (e) {}
+let P = null;    /* بيانات الحساب */
+let TXT = '';    /* نص التغريدة */
 
-let P = null;      // بيانات الحساب
-let TXT = '';      // نص التغريدة النهائي
-
-/* ---------- بناء الرابط والتغريدة ---------- */
-function dmLink() {
-  if (!P) return '';
-  let u = 'https://x.com/messages/compose?recipient_id=' + P.id;
-  const t = ($('prefill').value || '').trim();
-  if (t) u += '&text=' + encodeURIComponent(t);   // معامل رسمي من X
-  return u;
-}
-
+/* ---------------- بناء التغريدة ---------------- */
 function build() {
   if (!P) return '';
-  const intro = ($('intro').value || '').trim();
-  const em    = ($('emoji').value || '').trim();
-  const lbl   = ($('label').value || '').trim() || 'راسلني على الخاص';
-  const link  = dmLink();
-
-  // الرابط دائماً في آخر سطر — شرط رسم الزر في أسفل التغريدة
-  const head = (em ? em + ' ' : '') + lbl + ' 👇';
-  return (intro ? intro + '\n\n' : '') + head + '\n' + link;
+  return '💬 راسلني على الخاص 👇\nhttps://x.com/messages/compose?recipient_id=' + P.id;
 }
 
-/* ---------- الطول الموزون (X: رابط=23، إيموجي=2، الباقي=1) ---------- */
+/* ---------------- الطول الموزون (X: رابط=23، إيموجي=2) ---------------- */
 const URL_RE = /https?:\/\/[^\s]+/g;
 const EMOJI = [[0x2190,0x21FF],[0x2300,0x23FF],[0x2460,0x24FF],[0x2500,0x27BF],
                [0x2B00,0x2BFF],[0x1F000,0x1FAFF],[0x1F1E6,0x1F1FF],[0x3030,0x303D]];
@@ -63,7 +52,7 @@ function wlen(t) {
 
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-/* ---------- الرسم ---------- */
+/* ---------------- الرسم ---------------- */
 function draw() {
   TXT = build();
   if (!TXT) return;
@@ -75,12 +64,7 @@ function draw() {
   $('post').href = 'https://x.com/intent/tweet?text=' + encodeURIComponent(TXT);
 }
 
-function save() {
-  S.handle = $('handle').value; S.intro = $('intro').value;
-  S.emoji = $('emoji').value;   S.label = $('label').value;
-  S.prefill = $('prefill').value;
-  try { localStorage.setItem(LS, JSON.stringify(S)); } catch (e) {}
-}
+function save() { try { localStorage.setItem(LS, $('handle').value.trim()); } catch (e) {} }
 
 function say(cls, html) { $('msg').className = 'msg on ' + cls; $('msg').innerHTML = html; }
 
@@ -91,115 +75,95 @@ function toast(m) {
   toast._t = setTimeout(() => $('toast').classList.remove('on'), 1800);
 }
 
-/* ---------- التحقق من الحساب ---------- */
+/* ---------------- التحقق ---------------- */
 async function go() {
   const u = $('handle').value.trim().replace(/^@/, '');
   if (!u) return say('err', 'اكتب اسم المستخدم أولاً.');
 
   $('go').disabled = true;
-  say('ok', 'جارٍ التحقق…');
+  say('ok', 'جارٍ التحقق… <span class="spin"></span>');
 
   try {
     const r = await fetch('/api/lookup?u=' + encodeURIComponent(u));
     const d = await r.json();
 
     if (!d.ok) {
-      P = null;
-      $('who').innerHTML = '';
-      $('box').style.display = 'none';
-      $('box2').style.display = 'none';
-      $('tip').style.display = 'none';
+      P = null; $('who').innerHTML = ''; $('box').classList.add('hidden');
       return say('err', esc(d.error || 'تعذّر التحقق.'));
     }
 
-    P = d;
-    save();
+    P = d; save();
 
     $('who').innerHTML =
       '<div class="who">' +
         (d.avatar ? '<img src="' + esc(d.avatar) + '" alt="">' : '') +
         '<div><div class="n">' + esc(d.name) + '</div>' +
         '<div class="h">@' + esc(d.screen_name) + '</div></div>' +
-      '</div><div class="id">' + esc(d.id) + '</div>';
+      '</div>' +
+      '<div class="idbox"><div class="lbl">الرقم التعريفي</div>' +
+      '<div class="val">' + esc(d.id) + '</div></div>' +
+      '<div class="chk">' +
+        '<span>الحساب عام ✔</span>' +
+        (d.snowflake === 'ok' ? '<span>مطابق زمنياً ✔</span>' : '') +
+        '<span>' + (d.followers ?? '—') + ' متابع</span>' +
+      '</div>' +
+      (d.protected ? '<div class="msg on err" style="margin-top:11px">حسابك محمي — غير المتابعين لن يتمكنوا من الإرسال.</div>' : '');
 
-    say('ok', d.protected
-      ? '✔ تم التحقق — لكن حسابك <b>محمي</b>، وغير المتابعين لن يقدروا على الإرسال.'
-      : '✔ تم التحقق من @' + esc(d.screen_name) + ' بنجاح.');
-
-    $('box').style.display = 'block';
-    $('box2').style.display = 'block';
-    $('tip').style.display = 'block';
-    $('facts').style.display = 'block';
+    say('ok', '✔ تم التحقق من <b>@' + esc(d.screen_name) + '</b> بنجاح.');
+    $('box').classList.remove('hidden');
     draw();
   } catch (e) {
-    say('err', 'تعذّر الاتصال بالخادم. جرّب مرة أخرى، أو أدخل الرقم التعريفي يدوياً.');
+    say('err', 'تعذّر الاتصال بالخادم. أعد المحاولة أو استخدم «إدخال الرقم يدوياً».');
   } finally {
     $('go').disabled = false;
   }
 }
 
-/* ---------- إدخال يدوي للرقم التعريفي (يعمل حتى لو حجب X الخادم) ---------- */
+/* ---------------- إدخال الرقم يدوياً ---------------- */
 function manual() {
-  const id = prompt('أدخل الرقم التعريفي (User ID) لحسابك:\n\n'
-    + 'تعرفه من: الإعدادات ← حسابك ← تنزيل أرشيف ← account.js ← accountId');
+  const id = prompt('أدخل الرقم التعريفي (User ID):\n\n'
+    + 'ستجده في: الإعدادات ← حسابك ← تنزيل أرشيف ← account.js ← accountId');
   if (!id || !ID_RE.test(id.trim())) return;
-  P = { id: id.trim(), screen_name: 'حسابك', name: 'إدخال يدوي', avatar: null, protected: false };
-  $('box').style.display = 'block';
-  $('box2').style.display = 'block';
-  say('ok', '✔ تم استخدام الرقم التعريفي الذي أدخلته يدوياً.');
+  P = { id: id.trim(), name: 'إدخال يدوي', screen_name: '—', avatar: null };
+  $('box').classList.remove('hidden');
+  say('ok', '✔ تم استخدام الرقم التعريفي المُدخل يدوياً.');
   draw();
 }
 
-/* ---------- التهيئة ---------- */
+/* ---------------- النسخ ---------------- */
+function copyText() {
+  const done = () => toast('تم النسخ ✔');
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(TXT).then(done).catch(fallback);
+  } else fallback();
+  function fallback() {
+    const ta = document.createElement('textarea');
+    ta.value = TXT;
+    ta.style.cssText = 'position:fixed;top:-1000px;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) { toast('انسخ يدوياً من الصندوق'); }
+    document.body.removeChild(ta);
+  }
+}
+
+/* ---------------- التهيئة ---------------- */
 function init() {
-  $('handle').value = S.handle; $('intro').value = S.intro; $('emoji').value = S.emoji;
-  $('label').value = S.label;   $('prefill').value = S.prefill;
+  try {
+    const h = localStorage.getItem(LS);
+    if (h) $('handle').value = h;
+  } catch (e) {}
 
-  $('chips').innerHTML = CHIPS.map(c => '<button class="chip" data-e="' + c + '">' + c + '</button>').join('');
-  $('chips').querySelectorAll('.chip').forEach(b => {
-    b.onclick = () => { $('emoji').value = b.dataset.e; markChip(); save(); draw(); };
-  });
-
-  /* روابط التواصل في الفوتر */
-  $('social').innerHTML = SOCIAL.map(s => s.u
-    ? '<a class="soc" href="' + esc(s.u) + '" target="_blank" rel="noopener">'
-        + '<span class="si">' + s.e + '</span><span class="sn">' + esc(s.n) + '</span></a>'
-    : '<span class="soc off" title="الرابط غير مضاف بعد">'
-        + '<span class="si">' + s.e + '</span><span class="sn">' + esc(s.n) + '</span></span>'
-  ).join('');
+  $('social').innerHTML = SOCIAL.map(s =>
+    '<a class="soc" href="' + esc(s.u) + '" target="_blank" rel="noopener" title="' + esc(s.n) + '">' +
+      '<svg viewBox="0 0 24 24">' + (ICONS[s.i] || '') + '</svg>' +
+      '<span>' + esc(s.n) + '</span></a>').join('');
 
   $('go').onclick = go;
   $('handle').addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
-  ['intro','emoji','label','prefill'].forEach(id => {
-    $(id).addEventListener('input', () => { markChip(); save(); draw(); });
-  });
-
-  $('copy').onclick = () => {
-    const done = () => toast('تم النسخ ✔');
-    if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(TXT).then(done).catch(fallback);
-    } else fallback();
-    function fallback() {
-      const ta = document.createElement('textarea');
-      ta.value = TXT;
-      ta.style.cssText = 'position:fixed;top:-1000px;opacity:0';
-      document.body.appendChild(ta);
-      ta.select();
-      try { document.execCommand('copy'); done(); } catch (e) { toast('انسخ يدوياً من الصندوق'); }
-      document.body.removeChild(ta);
-    }
-  };
-
-  $('manual').onclick = manual;
+  $('handle').addEventListener('dblclick', manual);
+  $('copy').onclick = copyText;
   $('yr').textContent = new Date().getFullYear();
-  markChip();
-}
-
-function markChip() {
-  const cur = ($('emoji').value || '').trim();
-  $('chips').querySelectorAll('.chip').forEach(b => {
-    b.classList.toggle('on', b.dataset.e === cur);
-  });
 }
 
 init();
