@@ -58,6 +58,35 @@
 
 ---
 
+## 🔍 تحسين محركات البحث (SEO)
+
+الصفحة مهيأة بالكامل للفهرسة:
+
+| العنصر | الحالة |
+|---|---|
+| عنوان + وصف + كلمات مفتاحية | ✔ |
+| رابط قانوني `canonical` + `hreflang` | ✔ |
+| Open Graph (og:title/description/image/url/locale) | ✔ |
+| X Card `summary_large_image` | ✔ |
+| صورة مشاركة `assets/og-image.png` (1200×630) | ✔ |
+| بيانات منظّمة JSON-LD (WebApplication + Organization + WebSite + BreadcrumbList) | ✔ |
+| `robots.txt` + `sitemap.xml` | ✔ |
+| الروابط الاجتماعية **ثابتة في HTML** (مرئية للزواحف) | ✔ |
+| المحتوى يعمل بدون JavaScript | ✔ |
+| استجابة الزواحف (Googlebot/Bingbot/YandexBot) | ✔ 200 |
+
+### تسريع الفهرسة
+
+- **IndexNow** مُعدّ بالفعل: المفتاح مستضاف على الموقع، وتم إبلاغ
+  Bing و Yandex و Seznam و Naver (استجابة `202 Accepted`).
+- **Google**: يكتشف الخريطة تلقائياً عبر `robots.txt`. لتسريعها يدوياً:
+  افتح [Search Console](https://search.google.com/search-console) ← أضف النطاق ←
+  أرسل `sitemap.xml` ← استخدم «فحص عنوان URL» ← «طلب الفهرسة».
+
+> ⏳ الفهرسة في Google تستغرق من أيام إلى أسابيع، بخلاف IndexNow الذي يعمل خلال ساعات.
+
+---
+
 ## 🛡️ متانة المحلِّل (مهم للمطوّر)
 
 X يغيّر بنية HTML صفحاته دون إشعار. في أكتوبر ٢٠٢٦ أضاف حقلاً (`schema:null`) بين
