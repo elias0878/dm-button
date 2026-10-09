@@ -1,16 +1,21 @@
 # -*- coding: utf-8 -*-
 """
-دالة Vercel الخادمية (Serverless Function)
+نقطة الدخول الموحّدة على Vercel
 ant.xo.je  ·  حقوق ابونواف © 2026
 
-تجلب بيانات حساب X العامة وتستخرج الرقم التعريفي.
+يخدم:
+  GET /api/lookup?u=...   →  بيانات الحساب (JSON)
+  GET /  و /style.css ... →  الملفات الثابتة
+
 مكتبات Python القياسية فقط — بلا تبعيات.
 """
 
 from http.server import BaseHTTPRequestHandler
 from datetime import datetime, timezone
 import json
+import os
 import re
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -19,14 +24,39 @@ UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
 
 HANDLE_RE = re.compile(r"^[A-Za-z0-9_]{1,15}$")
-SNOW_EPOCH = 1288834974657      # بداية عصر Snowflake في X
-
-CACHE = {}                      # ذاكرة مؤقتة في الذاكرة (نطاق الدالة الدافئة)
+SNOW_EPOCH = 1288834974657
+CACHE = {}
 CACHE_TTL = 6 * 3600
 FETCH_TIMEOUT = 20
 
+# ---------------- تحديد مجلد المشروع ----------------
+_HERE = os.path.dirname(os.path.abspath(__file__))
 
-# ---------------- أدوات ----------------
+
+def _find_root():
+    for r in (os.path.dirname(_HERE), os.getcwd(), "/var/task", "/vercel/path0"):
+        try:
+            if os.path.isfile(os.path.join(r, "index.html")):
+                return r
+        except OSError:
+            continue
+    return os.path.dirname(_HERE)
+
+
+ROOT = _find_root()
+
+MIME = {
+    ".html": "text/html; charset=utf-8",
+    ".css": "text/css; charset=utf-8",
+    ".js": "application/javascript; charset=utf-8",
+    ".json": "application/json; charset=utf-8",
+    ".svg": "image/svg+xml",
+    ".ico": "image/x-icon",
+    ".txt": "text/plain; charset=utf-8",
+}
+
+
+# ---------------- أدوات تحليل HTML ----------------
 def js_bool(v):
     """X يخزّن القيم المنطقية مضغوطة: !1 = false و !0 = true"""
     if v is None:
@@ -78,8 +108,8 @@ def parse_profile(html):
 
     # الصورة الرمزية
     m = re.search(r'profile_images/(\d+)/([A-Za-z0-9_\-]+)_(?:normal|400x400|bigger)', html)
-    d["avatar"] = ("https://pbs.twimg.com/profile_images/%s/%s_400x400.jpg" % (m.group(1), m.group(2))
-                   if m else None)
+    d["avatar"] = ("https://pbs.twimg.com/profile_images/%s/%s_400x400.jpg"
+                   % (m.group(1), m.group(2))) if m else None
 
     # الإحصائيات
     m = re.search(r'relationship_counts:\$R\[\d+\]={followers:(\d+),following:(\d+)}', html)
@@ -89,7 +119,8 @@ def parse_profile(html):
     d["tweets"] = int(m.group(1)) if m else None
 
     # الحالة
-    d["protected"] = js_bool((re.search(r'privacy:\$R\[\d+\]={protected:(!?\d|true|false)', html) or [None, None])[1])
+    d["protected"] = js_bool(
+        (re.search(r'privacy:\$R\[\d+\]={protected:(!?\d|true|false)', html) or [None, None])[1])
     d["verified"] = (js_bool((re.search(r'isVerified:(!?\d|true|false)', html) or [None, None])[1])
                      or js_bool((re.search(r'is_blue_verified:(!?\d|true|false)', html) or [None, None])[1]))
 
@@ -104,7 +135,7 @@ def parse_profile(html):
         if not d.get("created_at_ms"):
             d["snowflake"] = "na"
         elif d["created_at_ms"] < SNOW_EPOCH:
-            d["snowflake"] = "na"           # حسابات ما قبل نوفمبر 2010: مُعرِّفات تسلسلية
+            d["snowflake"] = "na"          # حسابات ما قبل نوفمبر 2010: مُعرِّفات تسلسلية
         else:
             snow_ms = ((int(d["id"]) >> 22) + SNOW_EPOCH)
             d["snowflake"] = "ok" if abs(snow_ms - d["created_at_ms"]) < 86400000 else "fail"
@@ -115,7 +146,6 @@ def parse_profile(html):
 
 
 def lookup(username):
-    import time
     username = username.strip().lstrip("@")
     if not HANDLE_RE.match(username):
         return {"ok": False,
@@ -148,24 +178,69 @@ def lookup(username):
     return data
 
 
-# ---------------- مُعالج Vercel ----------------
+# ---------------- المُعالج ----------------
 class handler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        q = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
-        u = (q.get("u") or [""])[0]
-        res = lookup(u) if u else {"ok": False, "error": "لم تُدخل اسم المستخدم."}
 
-        body = json.dumps(res, ensure_ascii=False).encode("utf-8")
-        self.send_response(200)
-        self.send_header("Content-Type", "application/json; charset=utf-8")
+    def _out(self, code, body, ctype, extra=None):
+        if isinstance(body, str):
+            body = body.encode("utf-8")
+        self.send_response(code)
+        self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(body)))
-        # تخزين مؤقت على حافة الشبكة 6 ساعات
-        self.send_header("Cache-Control", "s-maxage=21600, stale-while-revalidate=86400")
+        for k, v in (extra or {}).items():
+            self.send_header(k, v)
         self.end_headers()
         try:
             self.wfile.write(body)
         except (BrokenPipeError, ConnectionResetError):
             pass
+
+    def _json(self, obj, cache=None):
+        self._out(200, json.dumps(obj, ensure_ascii=False),
+                  "application/json; charset=utf-8",
+                  {"Cache-Control": cache or "s-maxage=21600, stale-while-revalidate=86400"})
+
+    def _static(self, path):
+        rel = "index.html" if path in ("", "/") else path.lstrip("/")
+        if rel.endswith("/"):
+            rel += "index.html"
+        # منع الخروج من مجلد المشروع
+        rel = os.path.normpath(rel).lstrip(os.sep)
+        if rel.startswith("..") or os.path.isabs(rel) or (os.sep + "..") in rel:
+            return self._out(403, "403", "text/plain; charset=utf-8")
+        full = os.path.realpath(os.path.join(ROOT, rel))
+        if full != ROOT and not full.startswith(ROOT + os.sep):
+            return self._out(403, "403", "text/plain; charset=utf-8")
+        try:
+            with open(full, "rb") as fh:
+                body = fh.read()
+        except OSError:
+            return self._out(404, "404 — الصفحة غير موجودة", "text/plain; charset=utf-8")
+        self._out(200, body, MIME.get(os.path.splitext(full)[1].lower(),
+                                      "application/octet-stream"),
+                  {"Cache-Control": "public, max-age=300"})
+
+    def do_GET(self):
+        parsed = urllib.parse.urlparse(self.path)
+        path, q = parsed.path, urllib.parse.parse_qs(parsed.query)
+
+        if path.rstrip("/") == "/api/lookup":
+            u = (q.get("u") or [""])[0]
+            if not u:
+                return self._json({"ok": False, "error": "لم تُدخل اسم المستخدم."},
+                                  "no-store")
+            return self._json(lookup(u))
+
+        if path.rstrip("/") == "/api/health":
+            return self._json({"ok": True, "version": "1.0", "cached": len(CACHE)}, "no-store")
+
+        if path.startswith("/api/"):
+            return self._json({"ok": False, "error": "نقطة نهاية غير معروفة."}, "no-store")
+
+        return self._static(path)
+
+    def do_HEAD(self):
+        self.do_GET()
 
     def log_message(self, fmt, *args):
         pass

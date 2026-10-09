@@ -6,4 +6,4 @@ requires-python = ">=3.9"
 dependencies = []
 
 [tool.vercel]
-entrypoint = "api.lookup:handler"
+entrypoint = "api.index:handler"
