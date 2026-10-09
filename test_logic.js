@@ -124,6 +124,18 @@ console.log('\n── 9) حساب محمي ──');
   eq('التغريدة تُبنى', A.build().includes(ID), true);
 }
 
+console.log('\n── 10) روابط التواصل في الفوتر ──');
+{
+  const A = await fresh(PROFILE);
+  const html = els.social.innerHTML;
+  eq('يُبنى عدد الأزرار الصحيح', (html.match(/class="soc/g) || []).length, 9);
+  eq('الروابط المضافة = روابط حقيقية', (html.match(/<a class="soc"/g) || []).length, 2);
+  eq('غير المضافة = معطّلة', (html.match(/class="soc off"/g) || []).length, 7);
+  eq('رابط X صحيح', html.includes('https://x.com/2002_ant'), true);
+  eq('النطاق موجود', html.includes('ant.xo.je'), true);
+  eq('المعطّل لا يحتوي href', /class="soc off"[^>]*href/.test(html), false);
+}
+
 console.log(`\n════ النتيجة: ${pass} ناجح · ${fail} فاشل ════\n`);
 process.exit(fail ? 1 : 0);
 

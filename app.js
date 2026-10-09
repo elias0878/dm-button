@@ -7,6 +7,19 @@ const ID_RE = /^\d{5,25}$/;
 /* إيموجيات سريعة الاختيار */
 const CHIPS = ['💬', '✉️', '📩', '🙋', '💌', '📞', '🔔', '👋'];
 
+/* روابط التواصل — أضف روابطك هنا (اترك النص فارغاً لتعطيل الزر) */
+const SOCIAL = [
+  { n:'X / تويتر',  e:'🐦', u:'https://x.com/2002_ant' },
+  { n:'الموقع',     e:'🌐', u:'https://ant.xo.je'      },
+  { n:'تليجرام',    e:'✈️', u:'' },
+  { n:'واتساب',     e:'📱', u:'' },
+  { n:'البريد',     e:'📧', u:'' },
+  { n:'يوتيوب',     e:'▶️', u:'' },
+  { n:'جيت هب',     e:'💻', u:'' },
+  { n:'انستغرام',   e:'📸', u:'' },
+  { n:'تيك توك',    e:'🎵', u:'' },
+];
+
 /* الحالة المحفوظة في المتصفح */
 const S = { handle:'', intro:'', emoji:'💬', label:'راسلني على الخاص', prefill:'' };
 try { Object.assign(S, JSON.parse(localStorage.getItem(LS) || '{}')); } catch (e) {}
@@ -116,6 +129,7 @@ async function go() {
     $('box').style.display = 'block';
     $('box2').style.display = 'block';
     $('tip').style.display = 'block';
+    $('facts').style.display = 'block';
     draw();
   } catch (e) {
     say('err', 'تعذّر الاتصال بالخادم. جرّب مرة أخرى، أو أدخل الرقم التعريفي يدوياً.');
@@ -146,6 +160,14 @@ function init() {
     b.onclick = () => { $('emoji').value = b.dataset.e; markChip(); save(); draw(); };
   });
 
+  /* روابط التواصل في الفوتر */
+  $('social').innerHTML = SOCIAL.map(s => s.u
+    ? '<a class="soc" href="' + esc(s.u) + '" target="_blank" rel="noopener">'
+        + '<span class="si">' + s.e + '</span><span class="sn">' + esc(s.n) + '</span></a>'
+    : '<span class="soc off" title="الرابط غير مضاف بعد">'
+        + '<span class="si">' + s.e + '</span><span class="sn">' + esc(s.n) + '</span></span>'
+  ).join('');
+
   $('go').onclick = go;
   $('handle').addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
   ['intro','emoji','label','prefill'].forEach(id => {
@@ -169,6 +191,7 @@ function init() {
   };
 
   $('who').addEventListener('dblclick', manual);   // سرّي: نقرة مزدوجة للإدخال اليدوي
+  $('yr').textContent = new Date().getFullYear();
   markChip();
 }
 

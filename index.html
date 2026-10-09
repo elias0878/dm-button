@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>زر الرسائل الخاصة — أداة أبو نواف</title>
-<meta name="description" content="أنشئ زر رسائل خاصة مخصص لتغريدتك: اختر الإيموجي ونص الزر والرسالة الجاهزة، مع معاينة حية.">
-<meta name="author" content="أبو نواف">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%231d9bf0'/%3E%3Ctext x='50' y='71' font-size='56' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'%3E%D8%A3%3C/text%3E%3C/svg%3E">
+<title>زر الرسائل الخاصة — مقدمة من ابونواف هكر اخلاقي</title>
+<meta name="description" content="أنشئ زر رسائل خاصة مخصص لتغريدتك: الإيموجي ونص النداء والرسالة الجاهزة. مقدمة من ابونواف هكر اخلاقي — ant.xo.je">
+<meta name="author" content="ابونواف">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 4 L56 13 V33 C56 46 46 55 32 60 C18 55 8 46 8 33 V13 Z' fill='%231d9bf0'/%3E%3Cpath d='M22 26 L28 32 L22 38' stroke='%23fff' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M33 39 H43' stroke='%23fff' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
@@ -56,18 +56,99 @@
       <a class="ghost" id="post" target="_blank" rel="noopener">🐦 انشر في X</a>
     </div>
     <div class="hint">
-      ✔ الرابط موضوع في <b>آخر سطر</b> — هذا الشرط لكي يرسم X الزر في أسفل التغريدة.
+      ✔ الرابط موضوع في <b>آخر سطر</b> — هذا شرط X لكي يرسم الزر في أسفل التغريدة.
     </div>
   </div>
 
+  <!-- ملاحظات مهمة -->
+  <div class="card facts" id="facts" style="display:none">
+    <div class="step">!</div>
+    <h2>اقرأ هذا قبل النشر</h2>
+
+    <details open>
+      <summary>أين يظهر الإيموجي ونص الزر بالضبط؟</summary>
+      <p>ما تخصّصه أعلاه يظهر في <b>نص التغريدة نفسه</b> — وهو ما يقرأه الناس قبل أن يضغطوا. أما <b>الزر الذي يرسمه X</b> تلقائياً في أسفل التغريدة فنصه <b>ثابت من X</b> («Send a private message») ولا يمكن تغييره في التغريدات العادية المجانية.</p>
+    </details>
+
+    <details>
+      <summary>هل يمكنني جعل نص الزر بإيموجيّ الخاص فعلاً؟</summary>
+      <p>نعم — لكن عبر <b>مسار الشركات المدفوع فقط</b>، حسب توثيق X للأعمال:</p>
+      <ol>
+        <li>ادخل <b>حساب X الإعلاني</b> ← Creatives ← Cards</li>
+        <li>أنشئ <b>Direct Message Card</b> (صورة أو فيديو)</li>
+        <li>اختر عدد الأزرار — حتى <b>٤ أزرار</b></li>
+        <li><b>«أدخل نص كل زر — الإيموجي مدعوم»</b></li>
+        <li>أدخل <b>Welcome Message ID</b> لكل زر — إلزامي</li>
+      </ol>
+      <p class="warn">⚠️ معرّف رسالة الترحيب يتطلب <b>شريك chatbot معتمد على X</b>. بدون حساب إعلاني وشريك بوت، لا يمكن الحصول عليه.</p>
+    </details>
+
+    <details>
+      <summary>الرسالة الجاهزة لا تظهر عندي — لماذا؟</summary>
+      <p>المعامل <code>&amp;text=</code> <b>رسمي وموثّق</b> من X، ويفتح صندوق المراسلة بالنص مكتوباً. إن لم يظهر، راجع بالترتيب:</p>
+      <ol>
+        <li>الرسائل الخاصة مفتوحة للجميع عندك <b>وعند المُرسِل</b></li>
+        <li>جرّب من <b>حساب آخر</b> — لا تفتح رابطك وأنت مسجّل بحسابك أنت</li>
+        <li>افتح الرابط من <b>متصفح خارجي</b>، لا من داخل تطبيق X</li>
+        <li>بعض نسخ تطبيق الجوال تتجاهل المعامل — الويب أكثر ثباتاً</li>
+        <li>تأكد أن الرابط كامل بلا <b>مسافات</b> داخله</li>
+      </ol>
+      <p>تستطيع دائماً إيقاف هذه الميزة بترك الحقل فارغاً — يعمل الزر بدونه.</p>
+    </details>
+
+    <details>
+      <summary>شرط أساسي لا يُستغنى عنه</summary>
+      <p><b>الإعدادات ← الخصوصية والأمان ← الرسائل المباشرة ← «السماح بطلبات الرسائل من الجميع»</b>. بدونه يوصل الزائر لطريق مسدود.</p>
+    </details>
+  </div>
+
   <div class="note" id="tip" style="display:none">
-    ⚠️ فعّل: <b>الإعدادات ← الخصوصية والأمان ← الرسائل المباشرة ← «السماح بطلبات الرسائل من الجميع»</b>
+    ⚠️ فعّل: <b>«السماح بطلبات الرسائل من الجميع»</b> قبل النشر.
   </div>
 </main>
 
-<footer>
-  <div class="b">حقوق ابونواف</div>
-  <a href="https://ant.xo.je" target="_blank" rel="noopener">ant.xo.je</a>
+<!-- ============ الفوتر ============ -->
+<footer class="ft">
+  <div class="ft-inner">
+
+    <!-- الشعار والفريق -->
+    <div class="ft-brand">
+      <svg class="ft-logo" viewBox="0 0 64 64" aria-label="شعار فريق أبو نواف">
+        <defs>
+          <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#1d9bf0"/>
+            <stop offset="1" stop-color="#00ba7c"/>
+          </linearGradient>
+        </defs>
+        <path d="M32 4 L56 13 V33 C56 46 46 55 32 60 C18 55 8 46 8 33 V13 Z" fill="url(#lg)"/>
+        <path d="M22 26 L28 32 L22 38" stroke="#04231a" stroke-width="4.5" fill="none"
+              stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M33 39 H43" stroke="#04231a" stroke-width="4.5" stroke-linecap="round"/>
+      </svg>
+      <div class="ft-team">
+        <div class="ft-team-name">فريق أبو نواف</div>
+        <div class="ft-team-sub">Ethical Hacking Team</div>
+      </div>
+    </div>
+
+    <!-- الإعلان البارز -->
+    <div class="ft-credit">
+      <span class="ft-badge">مقدمة من</span>
+      <div class="ft-name">ابونواف</div>
+      <div class="ft-role">هكر اخلاقي</div>
+    </div>
+
+    <!-- أزرار التواصل -->
+    <div class="ft-social">
+      <div class="ft-soc-title">تواصل معنا</div>
+      <div class="ft-grid" id="social"></div>
+    </div>
+
+    <!-- النطاق والحقوق -->
+    <a class="ft-dom" href="https://ant.xo.je" target="_blank" rel="noopener">ant.xo.je</a>
+    <div class="ft-copy">© <span id="yr">2026</span> جميع الحقوق محفوظة — <b>حقوق ابونواف</b></div>
+
+  </div>
 </footer>
 
 <div class="toast" id="toast">تم النسخ ✔</div>
