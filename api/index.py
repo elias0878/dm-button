@@ -45,6 +45,11 @@ def _find_root():
 
 ROOT = _find_root()
 
+# ملفات يُسمح بخدمتها كملفات ثابتة (قائمة بيضاء)
+SAFE_EXT = {".html", ".css", ".js", ".svg", ".ico", ".png", ".jpg", ".webp", ".woff2"}
+BLOCKED = {"pyproject.toml", "requirements.txt", "vercel.json", "package.json",
+           ".env", ".gitignore", "uv.lock"}
+
 MIME = {
     ".html": "text/html; charset=utf-8",
     ".css": "text/css; charset=utf-8",
@@ -208,6 +213,13 @@ class handler(BaseHTTPRequestHandler):
         rel = os.path.normpath(rel).lstrip(os.sep)
         if rel.startswith("..") or os.path.isabs(rel) or (os.sep + "..") in rel:
             return self._out(403, "403", "text/plain; charset=utf-8")
+
+        # قائمة بيضاء: امتدادات الويب فقط + حظر ملفات الإعداد
+        name = os.path.basename(rel)
+        ext = os.path.splitext(name)[1].lower()
+        if ext not in SAFE_EXT or name in BLOCKED or name.startswith("."):
+            return self._out(404, "404 — الصفحة غير موجودة", "text/plain; charset=utf-8")
+
         full = os.path.realpath(os.path.join(ROOT, rel))
         if full != ROOT and not full.startswith(ROOT + os.sep):
             return self._out(403, "403", "text/plain; charset=utf-8")
