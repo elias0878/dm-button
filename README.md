@@ -2,6 +2,9 @@
 
 **حقوق ابونواف © 2026** · [ant.xo.je](https://ant.xo.je)
 
+🌐 **الموقع المباشر:** [https://dm-button.vercel.app](https://dm-button.vercel.app)
+📦 **المستودع:** [https://github.com/elias0878/dm-button](https://github.com/elias0878/dm-button)
+
 أداة ويب بسيطة: اكتب اسم حسابك في X، ثم **خصّص زر الرسائل الخاصة** — الإيموجي ونص النداء والرسالة الجاهزة — واحصل على تغريدة جاهزة للنشر.
 
 ---
@@ -52,7 +55,7 @@
 │   └── lookup.py     # دالة Vercel الخادمية (تجلب بيانات الحساب)
 ├── vercel.json       # إعداد النشر
 ├── test_logic.js     # ٢٢ اختباراً
-└── dev_server.py     # خادم تطوير محلي (غير مرفوع)
+└── pyproject.toml    # نقطة دخول Vercel
 ```
 
 ---
